@@ -1,19 +1,8 @@
+// src/pages/HogarPage.js
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import ProductGallery from '../components/ProductGallery'; // Componente de galería reutilizado
 import Sidebar from '../components/Sidebar'; // Sidebar añadido
-import sofaImage from '../images/sofa.jpg';
-import sofa2Image from '../images/sofa2.jpg';
-import sofa3Image from '../images/sofa3.jpg';
-import mesaImage from '../images/mesa.jpg';
-import mesa2Image from '../images/mesa2.jpg';
-import mesa3Image from '../images/mesa3.jpg';
-import sillaImage from '../images/silla.jpg';
-import silla2Image from '../images/silla2.jpg';
-import silla3Image from '../images/silla3.jpg';
-import estanteriaImage from '../images/estanteria.jpg';
-import estanteria2Image from '../images/estanteria2.jpg';
-import estanteria3Image from '../images/estanteria3.jpg';
 import { fetchExchangeRates, convertCurrency } from '../services/CurrencyService';
 
 // Estilos del contenedor principal
@@ -46,26 +35,13 @@ const BorderedContainer = styled.div`
   border: 1px solid rgba(97, 106, 107, 0.3);
 `;
 
-// Lista de productos (muebles para el hogar)
-const mueblesProducts = [
-  { title: 'Sofá Moderno', price: 800000, image: sofaImage, sizes: ['Pequeño', 'Mediano', 'Grande'], discount: true, category: 'Sofás' },
-  { title: 'Sofá Clásico', price: 850000, image: sofa2Image, sizes: ['Pequeño', 'Grande'], discount: false, category: 'Sofás' },
-  { title: 'Sofá Minimalista', price: 900000, image: sofa3Image, sizes: ['Mediano', 'Grande'], discount: true, category: 'Sofás' },
-  { title: 'Mesa de Comedor', price: 600000, image: mesaImage, sizes: ['4 personas', '6 personas'], discount: false, category: 'Mesas' },
-  { title: 'Mesa de Centro', price: 300000, image: mesa2Image, sizes: ['Pequeña', 'Mediana'], discount: true, category: 'Mesas' },
-  { title: 'Mesa Plegable', price: 400000, image: mesa3Image, sizes: ['Compacta'], discount: false, category: 'Mesas' },
-  { title: 'Silla de Oficina', price: 250000, image: sillaImage, sizes: ['Estándar'], discount: false, category: 'Sillas' },
-  { title: 'Silla de Gaming', price: 450000, image: silla2Image, sizes: ['Grande'], discount: true, category: 'Sillas' },
-  { title: 'Silla Vintage', price: 350000, image: silla3Image, sizes: ['Estándar'], discount: false, category: 'Sillas' },
-  { title: 'Estantería de Madera', price: 450000, image: estanteriaImage, sizes: ['Pequeña', 'Grande'], discount: true, category: 'Estanterías' },
-  { title: 'Estantería Metálica', price: 500000, image: estanteria2Image, sizes: ['Mediana'], discount: false, category: 'Estanterías' },
-  { title: 'Estantería Modular', price: 550000, image: estanteria3Image, sizes: ['Grande'], discount: true, category: 'Estanterías' },
-];
-
 const HogarPage = () => {
   const [currency, setCurrency] = useState('COP');
   const [exchangeRates, setExchangeRates] = useState({});
-  const [filteredMuebles, setFilteredMuebles] = useState(mueblesProducts);
+  const [filteredMuebles, setFilteredMuebles] = useState([]);
+
+  const selectedCategory = 'Hogar';
+  const selectedSubcategory = 'Muebles';
 
   useEffect(() => {
     const fetchRates = async () => {
@@ -77,30 +53,27 @@ const HogarPage = () => {
     fetchRates();
   }, []);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/products/products?category=${selectedCategory}&subcategory=${selectedSubcategory}`
+        );
+        if (!res.ok) throw new Error('Error al obtener productos');
+        const data = await res.json();
+        setFilteredMuebles(data.products);
+      } catch (error) {
+        console.error('Error al obtener productos:', error);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCategory, selectedSubcategory]);
+
   const convertPrice = (price) => {
     if (currency === 'COP') return price;
-    if (currency === 'MXN') return convertCurrency(price, exchangeRates['MXN']);
-    if (currency === 'USD') return convertCurrency(price, exchangeRates['USD']);
-    if (currency === 'EUR') return convertCurrency(price, exchangeRates['EUR']);
-    return price;
-  };
-
-  const renderSection = (category) => {
-    const filteredProducts = filteredMuebles.filter(product => product.category === category);
-    return (
-      <>
-        <SectionTitle>{category}</SectionTitle>
-        <BorderedContainer>
-          <ProductGallery
-            products={filteredProducts.map(product => ({
-              ...product,
-              price: convertPrice(product.price)
-            }))}
-            showSizes={true}
-          />
-        </BorderedContainer>
-      </>
-    );
+    const rate = exchangeRates[currency];
+    return rate ? convertCurrency(price, rate) : price;
   };
 
   return (
@@ -109,10 +82,17 @@ const HogarPage = () => {
       <Sidebar currency={currency} setCurrency={setCurrency} />
 
       <MainContent>
-        {renderSection('Sofás')}
-        {renderSection('Mesas')}
-        {renderSection('Sillas')}
-        {renderSection('Estanterías')}
+        <SectionTitle>{`${selectedCategory} - ${selectedSubcategory}`}</SectionTitle>
+        <BorderedContainer>
+          <ProductGallery
+            products={filteredMuebles.map(product => ({
+              ...product,
+              price: convertPrice(product.price),
+              image: product.imageUrl, // Asegúrate de que las imágenes estén bien definidas en el backend
+            }))}
+            showSizes={true}
+          />
+        </BorderedContainer>
       </MainContent>
     </Container>
   );

@@ -1,4 +1,3 @@
-// src/components/ProductGallery.js
 import React from 'react';
 import ProductCard from './ProductCard';
 import 'uikit/dist/css/uikit.min.css';
@@ -9,13 +8,10 @@ const ProductGallery = ({ products, showSizes }) => {
       {products.map((product, index) => (
         <div key={index}>
           <ProductCard 
-            title={product.title} 
+            title={product.name} 
             price={product.price} 
-            originalPrice={product.originalPrice} // Asegúrate de pasar esto también
-            image={product.image} 
-            showSizes={showSizes} 
-            sizes={product.sizes} // Asegúrate de pasar las tallas
-            discount={product.discount} // Asegúrate de pasar el descuento
+            image={product.image}
+            description={product.description}
           />
         </div>
       ))}

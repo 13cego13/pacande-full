@@ -207,24 +207,21 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [rol, setRol] = useState(null); // ✅ ¡Agregado para corregir el error!
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const nombre = localStorage.getItem('nombre');
+    const rolUsuario = localStorage.getItem('rol');
     if (token) {
       setIsAuthenticated(true);
       setNombreUsuario(nombre);
+      setRol(rolUsuario); // ✅ Actualiza el estado con el rol
     }
   }, []);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
-  };
-
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownOpen(false);
-    }
   };
 
   const toggleUserMenu = () => {
@@ -236,6 +233,8 @@ const Navbar = () => {
       setIsAuthenticated(false);
       localStorage.removeItem('token');
       localStorage.removeItem('nombre');
+      localStorage.removeItem('rol');
+      setRol(null); // Limpiar el rol al cerrar sesión
     } else {
       setShowLogin(true);
     }
@@ -298,12 +297,12 @@ const Navbar = () => {
       {userMenuOpen && (
         <DropdownUserMenu isOpen={userMenuOpen}>
           <UserMenuItem onClick={() => {
-          handleUserClick(); // Llamamos a handleUserClick para manejar cerrar sesión
-          toggleUserMenu(); // Cerrar el menú
+            handleUserClick();
+            toggleUserMenu();
           }}>Cerrar sesión</UserMenuItem>
           <UserMenuItem onClick={() => {
-          toggleUserMenu(); // Cerrar el menú al hacer clic en "Perfil"
-          window.location.href = '/perfil';
+            toggleUserMenu();
+            window.location.href = '/perfil';
           }}>Perfil</UserMenuItem>
         </DropdownUserMenu>
       )}
@@ -324,12 +323,23 @@ const Navbar = () => {
             <MenuItem to="/hogar" onClick={() => setDropdownOpen(false)}>Hogar</MenuItem>
             <MenuItem to="/deporte" onClick={() => setDropdownOpen(false)}>Deporte</MenuItem>
           </DropdownMenu>
-          <DropdownButton>
-            <StyledLink to="/ofertas" >
-             Ofertas
-            </StyledLink>
-          </DropdownButton>
         </DropdownButtonContainer>
+
+        <DropdownButton>
+          <StyledLink to="/">Ofertas</StyledLink>
+        </DropdownButton>
+
+        {rol === 'admin' && (
+          <>
+            <DropdownButton>
+              <StyledLink to="/admin">Usuarios</StyledLink>
+            </DropdownButton>
+
+            <DropdownButton>
+              <StyledLink to="/products">Productos</StyledLink>
+            </DropdownButton>
+          </>
+        )}
       </NavbarRow>
 
       {showLogin && <LoginModal onClose={closeLoginModal} />}

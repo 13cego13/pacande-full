@@ -1,3 +1,4 @@
+// frontend/src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -28,6 +29,8 @@ import RopaNiñoPage from './pages/Ropanino';
 import Tecnologiacomputadores from './pages/Tecnologiacomputadores';
 import Tecnologiaaccesorios from './pages/Tecnologiaaccesorios';
 import OfertaPage from './pages/OfertasPage';
+import ProductPage from './pages/ProductPage'; 
+import CreateProductPage from './pages/CreateProductPage';
 
 
 // Estilos para la pantalla de carga
@@ -110,8 +113,10 @@ const AppContent = () => {
         <Route path="/ofertas" element={<OfertaPage />} /> {/* Ruta para OfertaPage */}
         <Route path="*" element={<ErrorPage />} />
         <Route path="/perfil" element={<PerfilPage />} />
-        <Route path="/admin" element={<AdminPage/>} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/actualizar-usuario/:id" element={<ActualizarUsuarioPage />} />
+        <Route path="/products" element={<ProductPage />} />
+        <Route path="/create-product" element={<CreateProductPage />} /> {/* Asegúrate de que el "element" esté correctamente asignado */}
       </Routes>
       <Footer />
       <ToastContainer position="top-center" autoClose={3000} />

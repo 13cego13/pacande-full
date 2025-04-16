@@ -156,6 +156,7 @@ const LoginModal = ({ onClose }) => {
         });
         localStorage.setItem('token', data.token);
         localStorage.setItem('nombre', data.usuario.nombre);
+        localStorage.setItem('rol', data.usuario.rol);
         toast.success('✅ Inicio de sesión exitoso');
         setTimeout(() => {
           onClose(); // Cierra el modal

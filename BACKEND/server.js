@@ -23,6 +23,10 @@ app.get('/', (req, res) => {
 const userRoutes = require('./routes/authRoutes');
 app.use('/api/auth', userRoutes);
 
+// Rutas de productos
+const productRoutes = require('./routes/productRoutes');
+app.use('/api/products', productRoutes);
+
 // Rutas de administradores (si tienes un archivo separado)
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);

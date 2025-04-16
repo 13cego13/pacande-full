@@ -82,7 +82,7 @@ const PriceContainer = styled.div`
 
 const Price = styled.span`
   font-size: 1.2rem;
-  color: #ff0000;
+  color:rgb(0, 0, 0);
   font-weight: bold;
 `;
 
@@ -130,7 +130,7 @@ const CartButton = styled.button`
   }
 `;
 
-const ProductCard = ({ title, price, image, showSizes, sizes, discount, category, specifications }) => {
+const ProductCard = ({ title, price, image, showSizes, sizes, discount, category, specifications, description }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
 
@@ -146,14 +146,17 @@ const ProductCard = ({ title, price, image, showSizes, sizes, discount, category
     }
   };
 
+  const imageUrl = image || 'http://placekitten.com/500/500'; // URL de imagen por defecto si no hay imagen
+
   return (
     <Card>
       <FavoriteButton isFavorite={isFavorite} onClick={handleFavoriteClick}>
         <FaStar />
       </FavoriteButton>
       {discount && <DiscountLabel>50% OFF</DiscountLabel>}
-      <ProductImage src={image} alt={title} />
+      <ProductImage src={imageUrl} alt={title} />
       <ProductTitle>{title}</ProductTitle>
+      {description && (<p style={{ marginBottom: '10px', color: '#666' }}>{description}</p>)}
       <StarRating>
         <FaStar /> <FaStar /> <FaStar /> <FaStar /> <FaStar />
       </StarRating>
