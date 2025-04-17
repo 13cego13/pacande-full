@@ -1,5 +1,6 @@
 // backend/middleware/verifyToken.js
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,7 +13,13 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = decoded; // adjuntamos los datos del usuario al request
+
+    // Aseguramos que req.usuario.id sea un ObjectId válido (útil para queries)
+    req.usuario = {
+      id: new mongoose.Types.ObjectId(decoded.id),
+      rol: decoded.rol
+    };
+
     next();
   } catch (error) {
     return res.status(403).json({ mensaje: 'Token inválido o expirado.' });

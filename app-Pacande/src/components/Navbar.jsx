@@ -6,6 +6,7 @@ import 'uikit/dist/css/uikit.min.css';
 import logo from '../images/logopaca.png';
 import LoginModal from './LoginModal'; 
 import Tooltip from './Tooltip'; 
+import { useCart } from '../context/CartContext';
 
 const NavbarContainer = styled.nav`
   background-color: #000000; 
@@ -220,6 +221,9 @@ const Navbar = () => {
     }
   }, []);
 
+  const { totalItems } = useCart();
+
+
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
@@ -289,8 +293,26 @@ const Navbar = () => {
             )}
           </Tooltip>
           <Tooltip text="Carrito de compras">
-            <FaShoppingCart size={24} />
-          </Tooltip>
+  <Link to="/carrito" style={{ position: 'relative' }}>
+    <FaShoppingCart size={24} style={{ color: 'white' }} />
+    {totalItems > 0 && (
+      <span style={{
+        position: 'absolute',
+        top: '-5px',
+        right: '-10px',
+        background: '#FF0000',
+        color: 'white',
+        borderRadius: '50%',
+        padding: '2px 6px',
+        fontSize: '12px',
+        fontWeight: 'bold',
+      }}>
+        {totalItems}
+      </span>
+    )}
+  </Link>
+</Tooltip>
+
         </ButtonContainer>
       </NavbarRow>
 

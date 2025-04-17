@@ -31,6 +31,10 @@ app.use('/api/products', productRoutes);
 const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);
 
+const cartRoutes = require('./routes/cartRoutes');  // Importar las rutas del carrito
+app.use('/api/carrito', cartRoutes);  // Registrar las rutas
+
+
 // Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

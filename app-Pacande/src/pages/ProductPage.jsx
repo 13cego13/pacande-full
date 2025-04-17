@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
+import { useCart } from '../context/CartContext';  // Asegúrate de que tienes este hook
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
@@ -9,6 +10,7 @@ const ProductPage = () => {
   const [editedProduct, setEditedProduct] = useState({});
   const [openDialog, setOpenDialog] = useState(false);  // Controla la visibilidad del modal
   const [productToDelete, setProductToDelete] = useState(null);  // Guarda el producto que se va a eliminar
+  const { addToCart } = useCart();  // Obtener la función para agregar al carrito
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,7 +40,7 @@ const ProductPage = () => {
   const handleDeleteProduct = async () => {
     try {
       if (productToDelete) {
-        await axios.delete(`http://localhost:5000/api/products/products/${productToDelete._id}`);
+        await axios.delete(`http://localhost:5000/api/products/products/${productToDelete._id}`);  // Usamos _id
         fetchProducts();
         setOpenDialog(false);  // Cierra el modal después de eliminar
       }
@@ -55,6 +57,37 @@ const ProductPage = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);  // Cierra el modal sin eliminar
     setProductToDelete(null);  // Limpia el producto seleccionado
+  };
+
+  // --- Añadidos para edición ---
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditedProduct(products[index]);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedProduct(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveEdit = async (productId) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/products/products/${productId}`,  // Usamos _id para editar
+        editedProduct
+      );
+      setEditIndex(null);
+      setEditedProduct({});
+      fetchProducts();
+    } catch (error) {
+      console.error('Error al guardar los cambios:', error);
+    }
+  };
+  // -------------------------------
+
+  // Función para agregar al carrito
+  const handleAddToCart = (product) => {
+    addToCart(product);  // Agregar producto al carrito
   };
 
   return (
@@ -96,7 +129,7 @@ const ProductPage = () => {
                   </td>
                 </tr>
                 {items.map((product) => {
-                  const realIndex = products.findIndex(p => p._id === product._id);
+                  const realIndex = products.findIndex(p => p._id === product._id);  // Buscamos por _id
                   return (
                     <tr key={product._id}>
                       <td>
@@ -117,10 +150,35 @@ const ProductPage = () => {
                       </td>
                       {editIndex === realIndex ? (
                         <>
-                          <td><input name="name" value={editedProduct.name} onChange={handleInputChange} /></td>
-                          <td><input name="description" value={editedProduct.description} onChange={handleInputChange} /></td>
-                          <td><input name="price" value={editedProduct.price} onChange={handleInputChange} type="number" /></td>
-                          <td><input name="category" value={editedProduct.category} onChange={handleInputChange} /></td>
+                          <td>
+                            <input
+                              name="name"
+                              value={editedProduct.name}
+                              onChange={handleInputChange}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name="description"
+                              value={editedProduct.description}
+                              onChange={handleInputChange}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name="price"
+                              type="number"
+                              value={editedProduct.price}
+                              onChange={handleInputChange}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name="category"
+                              value={editedProduct.category}
+                              onChange={handleInputChange}
+                            />
+                          </td>
                         </>
                       ) : (
                         <>
@@ -132,19 +190,32 @@ const ProductPage = () => {
                       )}
                       <td className="actions">
                         {editIndex === realIndex ? (
-                          <button onClick={() => handleSaveEdit(product._id)} className="btn success">
+                          <button
+                            onClick={() => handleSaveEdit(product._id)}  // Usamos _id para guardar
+                            className="btn success"
+                          >
                             Guardar
                           </button>
                         ) : (
-                          <button onClick={() => handleEditClick(realIndex)} className="btn warning">
+                          <button
+                            onClick={() => handleEditClick(realIndex)}
+                            className="btn warning"
+                          >
                             Editar
                           </button>
                         )}
                         <button
-                          onClick={() => handleDeleteClick(product)}
+                          onClick={() => handleDeleteClick(product)}  // Usamos _id para eliminar
                           className="btn danger"
                         >
                           Eliminar
+                        </button>
+                        {/* Botón para agregar al carrito */}
+                        <button
+                          onClick={() => handleAddToCart(product)}  // Usamos _id al agregar al carrito
+                          className="btn primary"
+                        >
+                          Agregar al Carrito
                         </button>
                       </td>
                     </tr>

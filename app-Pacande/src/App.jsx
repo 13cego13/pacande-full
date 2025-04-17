@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CartProvider } from './context/CartContext'; // Agregado para carrito
 import Navbar from './components/Navbar';
 import AdminPage from './pages/AdminPage'; // Importa la página de administración
 import HomePage from './pages/HomePage';
@@ -31,7 +32,8 @@ import Tecnologiaaccesorios from './pages/Tecnologiaaccesorios';
 import OfertaPage from './pages/OfertasPage';
 import ProductPage from './pages/ProductPage'; 
 import CreateProductPage from './pages/CreateProductPage';
-
+import Carrito from './pages/Carrito';
+import CartPage from './pages/CartPage'
 
 // Estilos para la pantalla de carga
 const LoaderContainer = styled.div`
@@ -117,6 +119,8 @@ const AppContent = () => {
         <Route path="/admin/actualizar-usuario/:id" element={<ActualizarUsuarioPage />} />
         <Route path="/products" element={<ProductPage />} />
         <Route path="/create-product" element={<CreateProductPage />} /> {/* Asegúrate de que el "element" esté correctamente asignado */}
+        <Route path='/carrito' element={<Carrito   />} />
+        <Route path="/carrito" element={<CartPage />} />
       </Routes>
       <Footer />
       <ToastContainer position="top-center" autoClose={3000} />
@@ -127,11 +131,14 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <div className="App">
-        <AppContent />
-      </div>
+      <CartProvider>
+        <div className="App">
+          <AppContent />
+        </div>
+      </CartProvider>
     </Router>
   );
 }
+
 
 export default App;

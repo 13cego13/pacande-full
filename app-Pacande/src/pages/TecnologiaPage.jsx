@@ -87,7 +87,7 @@ const TecnologiaPage = () => {
             products={products.map(product => ({
               ...product,
               price: convertPrice(product.price),
-              image: product.imageUrl,
+              image: product.imageurl,
             }))}
             showSpecs={true}
           />
