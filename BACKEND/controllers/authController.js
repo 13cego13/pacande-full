@@ -53,9 +53,10 @@ const loginUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'Correo o contraseña incorrectos' });
     }
 
-    const token = jwt.sign({ id: usuario._id, rol: usuario.rol }, process.env.JWT_SECRET, {
-      expiresIn: '2h'
+    const token = jwt.sign({ id: user._id, rol: user.rol }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
     });
+    
 
     res.json({ token, usuario: { id: usuario._id, nombre: usuario.nombre, rol: usuario.rol } });
   } catch (err) {

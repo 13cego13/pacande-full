@@ -32,7 +32,8 @@ const adminRoutes = require('./routes/adminRoutes');
 app.use('/api/admin', adminRoutes);
 
 const cartRoutes = require('./routes/cartRoutes');  // Importar las rutas del carrito
-app.use('/api/carrito', cartRoutes);  // Registrar las rutas
+app.use('/api/cart', cartRoutes);  // Registrar las rutas
+console.log('Rutas del carrito registradas en /api/cart');
 
 
 // Iniciar el servidor

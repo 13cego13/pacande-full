@@ -90,11 +90,13 @@ const HogarPage = () => {
               price: convertPrice(product.price),
               image: product.imageUrl, // Asegúrate de que las imágenes estén bien definidas en el backend
             }))}
+      
             showSizes={true}
           />
         </BorderedContainer>
       </MainContent>
     </Container>
+    
   );
 };
 

@@ -1,63 +1,124 @@
-import React, { createContext, useContext, useState } from 'react';
+// src/context/CartContext.jsx
 
-// Crear el contexto
+import React, { createContext, useState, useContext } from 'react';
+import { useAuth } from './AuthContext';
+
 const CartContext = createContext();
 
-// Hook personalizado para acceder al contexto
-export const useCart = () => useContext(CartContext);
-
-// Proveedor del contexto
-export const CartProvider = ({ children }) => {
+export const CartContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const { token, logout } = useAuth(); // ⬅️ AÑADIDO logout
+  console.log('Token del usuario:', token);
 
-  // Agregar producto al carrito
-  const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(item => item.id === product._id); // Usar _id de MongoDB
-      if (existingItem) {
-        // Si ya existe, aumentar cantidad
-        return prevItems.map(item =>
-          item.id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        // Si no, agregar un nuevo producto con cantidad 1
-        return [...prevItems, { ...product, id: product._id, quantity: 1 }]; // Usar _id de MongoDB
+  const manejarErrorToken = (status) => {
+    if (status === 401 || status === 403) {
+      console.warn('Token expirado o inválido. Cerrando sesión automáticamente...');
+      logout(); // ⬅️ Cierra sesión si token inválido
+    }
+  };
+
+  const getCart = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/cart', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        manejarErrorToken(response.status); // ⬅️ Nuevo manejo
+        throw new Error('Error al obtener el carrito');
       }
-    });
+
+      const data = await response.json();
+      setCartItems(data);
+    } catch (error) {
+      console.error('Error del servidor:', error);
+    }
   };
 
-  // Remover un producto del carrito por su id
-  const removeFromCart = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id)); // Usar _id para eliminar
+  const addToCart = async (product) => {
+    try {
+      if (!token) throw new Error('Usuario no autenticado');
+
+      const response = await fetch('http://localhost:5000/api/cart/agregar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(product),
+      });
+
+      if (!response.ok) {
+        manejarErrorToken(response.status); // ⬅️ Nuevo manejo
+        throw new Error('Error al agregar al carrito');
+      }
+
+      const data = await response.json();
+      setCartItems((prevItems) => [...prevItems, data]);
+      console.log('Producto agregado al carrito:', data);
+    } catch (error) {
+      console.error('Error del servidor:', error);
+    }
+    
+  };
+  
+
+  const removeFromCart = async (productId) => {
+    try {
+      if (!token) throw new Error('Usuario no autenticado');
+
+      const response = await fetch('http://localhost:5000/api/cart/eliminar', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (!response.ok) {
+        manejarErrorToken(response.status); // ⬅️ Nuevo manejo
+        throw new Error('Error al eliminar producto del carrito');
+      }
+
+      setCartItems((prevItems) => prevItems.filter(item => item._id !== productId));
+      console.log('Producto eliminado del carrito');
+    } catch (error) {
+      console.error('Error del servidor:', error);
+    }
   };
 
-  // Vaciar todo el carrito
-  const clearCart = () => {
-    setCartItems([]);
-  };
+  const clearCart = async () => {
+    try {
+      if (!token) throw new Error('Usuario no autenticado');
 
-  // Actualizar cantidad manualmente
-  const updateQuantity = (id, quantity) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+      const response = await fetch('http://localhost:5000/api/cart/vaciar', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        manejarErrorToken(response.status); // ⬅️ Nuevo manejo
+        throw new Error('Error al vaciar el carrito');
+      }
+
+      setCartItems([]);
+      console.log('Carrito vaciado');
+    } catch (error) {
+      console.error('Error del servidor:', error);
+    }
   };
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        updateQuantity,
-      }}
-    >
+    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, getCart }}>
       {children}
     </CartContext.Provider>
   );
 };
+
+export const useCart = () => useContext(CartContext);

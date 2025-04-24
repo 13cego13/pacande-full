@@ -348,7 +348,7 @@ const Navbar = () => {
         </DropdownButtonContainer>
 
         <DropdownButton>
-          <StyledLink to="/">Ofertas</StyledLink>
+          <StyledLink to="/ofertas">Ofertas</StyledLink>
         </DropdownButton>
 
         {rol === 'admin' && (

@@ -210,13 +210,6 @@ const ProductPage = () => {
                         >
                           Eliminar
                         </button>
-                        {/* Botón para agregar al carrito */}
-                        <button
-                          onClick={() => handleAddToCart(product)}  // Usamos _id al agregar al carrito
-                          className="btn primary"
-                        >
-                          Agregar al Carrito
-                        </button>
                       </td>
                     </tr>
                   );

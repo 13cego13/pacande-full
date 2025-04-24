@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CartProvider } from './context/CartContext'; // Agregado para carrito
 import Navbar from './components/Navbar';
 import AdminPage from './pages/AdminPage'; // Importa la página de administración
 import HomePage from './pages/HomePage';
@@ -32,8 +31,10 @@ import Tecnologiaaccesorios from './pages/Tecnologiaaccesorios';
 import OfertaPage from './pages/OfertasPage';
 import ProductPage from './pages/ProductPage'; 
 import CreateProductPage from './pages/CreateProductPage';
-import Carrito from './pages/Carrito';
 import CartPage from './pages/CartPage'
+import { AuthProvider } from "./context/AuthContext";
+import { CartContextProvider } from "./context/CartContext";
+
 
 // Estilos para la pantalla de carga
 const LoaderContainer = styled.div`
@@ -119,8 +120,10 @@ const AppContent = () => {
         <Route path="/admin/actualizar-usuario/:id" element={<ActualizarUsuarioPage />} />
         <Route path="/products" element={<ProductPage />} />
         <Route path="/create-product" element={<CreateProductPage />} /> {/* Asegúrate de que el "element" esté correctamente asignado */}
-        <Route path='/carrito' element={<Carrito   />} />
-        <Route path="/carrito" element={<CartPage />} />
+        <Route path="/carrito" element={<CartPage />} /> {/* Ruta para el carrito */}
+        <Route path="/cart/:id" element={<CartPage />} /> {/* Ruta para el carrito con ID */}
+        <Route path="/cart/:id/:quantity" element={<CartPage />} /> {/* Ruta para el carrito con ID y cantidad */}
+        <Route path="/cart/:id/:quantity/:price" element={<CartPage />} /> {/* Ruta para el carrito con ID, cantidad y precio */}
       </Routes>
       <Footer />
       <ToastContainer position="top-center" autoClose={3000} />
@@ -131,11 +134,13 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <CartProvider>
-        <div className="App">
-          <AppContent />
-        </div>
-      </CartProvider>
+      <AuthProvider> {/* <-- Aquí lo envuelves */}
+        <CartContextProvider>
+          <div className="App">
+              <AppContent />
+          </div>
+        </CartContextProvider>
+      </AuthProvider>
     </Router>
   );
 }
