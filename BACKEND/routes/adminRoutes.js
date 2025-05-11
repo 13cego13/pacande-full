@@ -7,18 +7,11 @@ const {
   obtenerUsuarioPorId,
   actualizarUsuario,
   eliminarUsuario
-} = require('../controllers/adminController'); // Controlador para manejar la lógica de los usuarios
+} = require('../controllers/adminController');
 
-// Obtener todos los usuarios (solo admin)
 router.get('/usuarios', verifyToken, verifyAdmin, obtenerTodosUsuarios);
-
-// Obtener un usuario por ID (solo admin)
 router.get('/usuarios/:id', verifyToken, verifyAdmin, obtenerUsuarioPorId);
-
-// Actualizar un usuario por ID (solo admin)
 router.put('/usuarios/:id', verifyToken, verifyAdmin, actualizarUsuario);
-
-// Eliminar un usuario por ID (solo admin)
 router.delete('/eliminar-usuario/:id', verifyToken, verifyAdmin, eliminarUsuario);
 
 module.exports = router;

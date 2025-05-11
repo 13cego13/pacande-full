@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { registrarUsuario, loginUsuario, actualizarPerfil, obtenerPerfil, cambiarContrasena } = require('../controllers/authcontroller');
-const verifyToken = require('../middleware/verifyToken'); // Controlador para manejar la lógica de los usuarios
+const { registrarUsuario, loginUsuario, actualizarPerfil, obtenerPerfil, cambiarContrasena } = require('../controllers/authController');
+const verifyToken = require('../middleware/verifyToken'); 
 
 router.post('/registro', registrarUsuario);
 router.post('/login', loginUsuario);

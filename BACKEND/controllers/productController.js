@@ -32,12 +32,12 @@ exports.getProducts = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
       const { id } = req.params;  // Obtén el ID del producto desde la URL
-      const { name, description, price, category, imageUrl } = req.body;
+      const { name, description, price, category, imageUrl, subcategory } = req.body;
   
       // Busca el producto por ID y actualízalo
       const updatedProduct = await Product.findByIdAndUpdate(
         id,
-        { name, description, price, category, imageUrl },
+        { name, description, price, category, subcategory, imageUrl },
         { new: true }  // Esto devolverá el producto actualizado
       );
   

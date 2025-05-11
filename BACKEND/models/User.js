@@ -6,6 +6,6 @@ const userSchema = new mongoose.Schema({
   correo: { type: String, required: true, unique: true },
   contraseña: { type: String, required: true },
   rol: { type: String, default: 'Usuario' }
-}, { timestamps: true }); // <- Esto genera createdAt y updatedAt
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('User', userSchema);

@@ -57,6 +57,32 @@ const ProductPage = () => {
     setProductToDelete(null);  // Limpia el producto seleccionado
   };
 
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditedProduct({ ...products[index] });
+  };
+  
+  const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  console.log(`Cambio: ${name} = ${value}`);  // 👈 Agrega este log
+  setEditedProduct((prevProduct) => ({
+    ...prevProduct,
+    [name]: value,
+  }));
+};
+  
+  const handleSaveEdit = async (id) => {
+    try {
+      await axios.put(`http://localhost:5000/api/products/products/${id}`, editedProduct);
+      setEditIndex(null);
+      fetchProducts();
+    } catch (error) {
+      console.error('Error al guardar los cambios:', error);
+    }
+  };
+
+  
+
   return (
     <div className="container">
       <h1 className="title">📦 Administrar Productos</h1>
@@ -75,6 +101,7 @@ const ProductPage = () => {
             <th>Descripción</th>
             <th>Precio</th>
             <th>Categoría</th>
+            <th>Subategoría</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -119,15 +146,53 @@ const ProductPage = () => {
                         <>
                           <td><input name="name" value={editedProduct.name} onChange={handleInputChange} /></td>
                           <td><input name="description" value={editedProduct.description} onChange={handleInputChange} /></td>
-                          <td><input name="price" value={editedProduct.price} onChange={handleInputChange} type="number" /></td>
-                          <td><input name="category" value={editedProduct.category} onChange={handleInputChange} /></td>
+                          <td><input name="price" value={editedProduct.price} onChange={handleInputChange} /></td>
+                          <td>
+                            <select name="category" value={editedProduct.category} onChange={(e) => {
+                              const selectedCategory = e.target.value;
+                              setEditedProduct((prev) => ({
+                                ...prev,
+                                category: selectedCategory,
+                                subcategory: '', // limpiar subcategoría
+                              }));
+                            }}>
+                              <option value="">Selecciona una categoría</option>
+                              <option value="Ropa">Ropa</option>
+                              <option value="Tecnología">Tecnología</option>
+                              <option value="Hogar">Hogar</option>
+                              <option value="Deporte">Deporte</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select
+                              name="subcategory"
+                              value={editedProduct.subcategory}
+                              onChange={handleInputChange}
+                            >
+                              <option value="">Selecciona una subcategoría</option>
+                              {editedProduct.category === 'Ropa' && ['Hombre', 'Mujer', 'Niños'].map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                              {editedProduct.category === 'Tecnología' && ['Computadoras', 'Celulares', 'Accesorios'].map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                              {editedProduct.category === 'Hogar' && ['Muebles', 'Decoración', 'Jardin'].map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                              {editedProduct.category === 'Deporte' && ['Fútbol', 'Básquetbol', 'variedad'].map((s) => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                          </td>
+
                         </>
                       ) : (
                         <>
                           <td>{product.name}</td>
                           <td>{product.description}</td>
-                          <td>${product.price}</td>
+                          <td>{product.price}</td>
                           <td>{product.category}</td>
+                          <td>{product.subcategory}</td>
                         </>
                       )}
                       <td className="actions">
